@@ -1,0 +1,595 @@
+```md
+# Kubernetes Basic Notes
+
+Kubernetes is also called K8s.
+
+Kubernetes is a tool used to run and manage containers. it solves problem of, scalablity(increase pods if high traffic), loadbalacning(divide traffic between multiple pods), high availability(if 1 cluster have 4 nodes , and one node get destroyed it will auto transfer all pods to other nodes)
+
+Load Balancing: Distributing the traffic fairly across all Pods.
+Auto-Scaling: Watching the traffic/CPU and spawning new Pods dynamically.
+Auto-Healing: Constantly monitoring the Pods and instantly recreating any that crash or get deleted.
+High Availability:
+Worker HA: Never relying on one machine. If a Worker VM dies, the Pods shift to the surviving VMs.
+Master HA: Using consensus algorithms (like Raft in etcd) so the surviving Master VMs vote and maintain total control of the cluster if a Master dies.
+
+Docker is used to create and run containers.
+Kubernetes is used to manage containers in a better way, especially when there are many containers or many servers.
+
+---
+
+## Docker vs Kubernetes
+
+Docker:
+
+Run this container.
+
+Kubernetes:
+
+Keep this app running like I described.
+
+Example:
+
+Docker command:
+
+docker run -p 3000:3000 my-app
+
+Kubernetes command:
+
+kubectl apply -f k8s/
+
+---
+
+## Main Idea
+
+In Docker, we directly run a container.
+
+In Kubernetes, we create instruction files.
+
+These files tell Kubernetes:
+
+- which image to run
+- how many copies to run
+- which port to use
+- how services should connect
+- how to expose the app
+- what to do if something crashes
+
+Then Kubernetes follows those instructions.
+
+---
+
+## Important Flow
+
+Kubernetes usually does not build images.
+
+Docker builds images.
+Kubernetes runs images.
+
+Flow:
+
+Code
+-> Dockerfile
+-> Docker image
+-> Push image to Docker Hub or registry
+-> Kubernetes pulls image
+-> Kubernetes runs Pods
+
+Simple line:
+
+Dockerfile = how to build image
+
+K8s YAML = how to run image
+
+---
+
+## Do We Need Docker Compose With Kubernetes?
+
+Usually no.
+
+Docker Compose and Kubernetes both run multiple containers, but they are used differently.
+
+Docker Compose is mostly for local development.
+
+Kubernetes is mostly for production-style deployment.
+
+Docker Compose uses:
+
+docker-compose.yml
+
+Kubernetes uses files like:
+
+deployment.yaml
+service.yaml
+configmap.yaml
+secret.yaml
+ingress.yaml
+
+---
+
+## Docker Compose vs Kubernetes
+
+Docker Compose:
+
+docker compose up
+
+This can:
+
+- build images
+- create containers
+- create network
+- attach ports
+- run all containers
+
+Kubernetes:
+
+kubectl apply -f k8s/
+
+This can:
+
+- read Kubernetes YAML files
+- create Deployments
+- create Pods
+- create Services
+- create networking
+- run multiple copies
+- keep apps alive
+
+But Kubernetes usually does not build the image.
+
+The image should already exist in Docker Hub or another registry.
+
+---
+
+## When To Use Docker Only?
+
+Use Docker only when you want to run one container.
+
+Example:
+
+docker run -p 3000:3000 my-app
+
+Good for:
+
+- learning
+- testing one app
+- running one database
+- simple container practice
+
+---
+
+## When To Use Docker Compose?
+
+Use Docker Compose when you want to run multiple containers on one machine.
+
+Example:
+
+frontend + backend + MongoDB
+
+Good for:
+
+- local development
+- small projects
+- testing full app on your laptop
+- starting all services with one command
+
+Command:
+
+docker compose up
+
+---
+
+## When To Use Kubernetes?
+
+Use Kubernetes when you want production-style container management.
+
+Good for:
+
+- real deployment
+- multiple servers or VMs
+- many containers
+- scaling apps
+- auto restart
+- load balancing
+- rolling updates
+- managing many services
+
+Command:
+
+kubectl apply -f k8s/
+
+---
+
+# Kubernetes Keywords
+
+## Cluster
+
+Cluster means the full Kubernetes setup.
+
+Example:
+
+If 2 VMs are joined together in Kubernetes:
+
+1 cluster
+2 nodes
+
+Simple meaning:
+
+Cluster = full Kubernetes system
+
+---
+
+## Node
+
+Node means one machine or VM inside the cluster.
+
+Example:
+
+If you have 2 VMs, then you have 2 nodes.
+
+Simple meaning:
+
+Node = server where Pods can run
+
+---
+
+## Pod
+
+Pod is the smallest running unit in Kubernetes.
+
+A container runs inside a Pod.
+
+Example:
+
+Pod
+-> container
+-> app
+
+Usually we do not create Pods directly.
+Deployment creates Pods for us.
+
+Simple meaning:
+
+Pod = wrapper around container
+
+---
+
+## Deployment
+
+Deployment is an instruction file for Kubernetes.
+
+It tells Kubernetes:
+
+- which Docker image to run
+- how many Pods to run
+- which container port to use
+- how to keep Pods alive
+- how to update the app
+
+Example:
+
+replicas: 3
+
+This means:
+
+Kubernetes should keep 3 Pods running.
+
+If one Pod crashes, Kubernetes creates another one.
+
+Simple meaning:
+
+Deployment = manager of Pods
+
+---
+
+## Service
+
+Pods can stop, restart, and get new IP addresses.
+
+So we use Service.
+
+Service gives a stable address to access Pods.
+
+Service can also expose our app to outside users.
+
+Simple meaning:
+
+Service = stable way to reach Pods
+
+Flow:
+
+User
+-> Service
+-> Pod
+-> Container
+-> App
+
+---
+
+## Label
+
+Label is like a name tag for Pods.
+
+Example:
+
+app: backend
+
+Service uses labels to find the correct Pods.
+
+Example:
+
+Backend Service sends traffic to Pods with:
+
+app: backend
+
+Simple meaning:
+
+Label = tag used to connect Kubernetes things
+
+---
+
+## Replica
+
+Replica means copy.
+
+Example:
+
+replicas: 3
+
+This means Kubernetes runs 3 copies of the same app.
+
+Simple meaning:
+
+Replica = one copy of a Pod
+
+---
+
+## kubectl
+
+kubectl is the command-line tool used to talk to Kubernetes.
+
+We use kubectl to create, check, update, and delete Kubernetes resources.
+
+Common commands:
+
+kubectl apply -f k8s/
+
+Create or update everything inside the k8s folder.
+
+kubectl get pods
+
+Show Pods.
+
+kubectl get deployments
+
+Show Deployments.
+
+kubectl get services
+
+Show Services.
+
+kubectl logs pod-name
+
+Show logs of a Pod.
+
+kubectl delete -f k8s/
+
+Delete resources created from the k8s folder.
+
+---
+
+# Simple Example
+
+Suppose we have:
+
+- frontend app
+- backend app
+- MongoDB database
+
+In Docker Compose, we may run all using:
+
+docker compose up
+
+In Kubernetes, we create YAML files:
+
+frontend-deployment.yaml
+frontend-service.yaml
+backend-deployment.yaml
+backend-service.yaml
+mongo-deployment.yaml
+mongo-service.yaml
+
+Then run:
+
+kubectl apply -f k8s/
+
+Kubernetes will create and run everything.
+
+---
+
+## Example Structure
+
+my-project/
+frontend/
+Dockerfile
+backend/
+Dockerfile
+k8s/
+frontend-deployment.yaml
+frontend-service.yaml
+backend-deployment.yaml
+backend-service.yaml
+mongo-deployment.yaml
+mongo-service.yaml
+
+---
+
+## With 2 VMs
+
+If we have 2 VMs connected in Kubernetes:
+
+1 cluster
+2 nodes
+
+Example:
+
+Cluster
+-> Node 1 / VM 1
+-> Node 2 / VM 2
+
+Kubernetes can place Pods on any node.
+
+Example:
+
+Node 1:
+frontend Pod
+backend Pod
+
+Node 2:
+mongo Pod
+
+Still this is:
+
+1 cluster
+2 nodes
+
+---
+
+# Important Friend Example
+
+Question:
+
+If my friend pulls code from GitHub and runs:
+
+kubectl apply -f k8s/
+
+Will it build image and run everything?
+
+Answer:
+
+It will run Kubernetes files, but it usually will not build Docker images.
+
+Kubernetes expects images to already exist.
+
+Correct flow:
+
+1. Build image using Docker
+2. Push image to Docker Hub or registry
+3. Kubernetes pulls that image
+4. Kubernetes runs Pods and Services
+
+Example:
+
+docker build -t username/backend:1.0 ./backend
+
+docker push username/backend:1.0
+
+kubectl apply -f k8s/
+
+In Kubernetes YAML:
+
+image: username/backend:1.0
+
+Then Kubernetes pulls that image and runs it.
+
+---
+
+# Very Important Lines
+
+Dockerfile tells how to build image.
+
+Docker image is what Kubernetes runs.
+
+Kubernetes YAML tells how to run and manage the image.
+
+Docker Compose can build and run locally.
+
+Kubernetes usually only runs already-built images.
+
+Docker Compose is easy for local development.
+
+Kubernetes is powerful for production deployment.
+
+---
+
+# Super Simple Summary
+
+Docker = run container
+
+Docker Compose = run many containers on one machine
+
+Kubernetes = manage many containers properly, often across many machines
+
+Cluster = full Kubernetes system
+
+Node = one VM/server inside cluster
+
+Pod = smallest unit where container runs
+
+Deployment = tells Kubernetes how many Pods to run and manage
+
+Service = stable way to access Pods
+
+Label = name tag used to connect Services to Pods
+
+Replica = copy of a Pod
+
+kubectl = command used to control Kubernetes
+```
+---
+
+# Practical Activity: Deploying Nginx to Local Kubernetes
+
+## Goal
+To experience Kubernetes auto-healing and load-balancing using an Nginx web server.
+
+## Step 1: Write the Instructions (nginx.yaml)
+We created a Deployment and a Service.
+- The **Deployment** was instructed to maintain 
+eplicas: 2 (2 identical copies of Nginx).
+- The **Service** was set as a LoadBalancer mapping port 8080 to the containers' port 80.
+
+## Step 2: Apply the Instructions
+Command used:
+kubectl apply -f k8s/nginx.yaml
+
+The exact millisecond this command runs, Kubernetes reads the file, downloads the Docker image, and starts the Pods. 
+(Commands like kubectl get pods are just read-only commands to watch the progress).
+
+## Step 3: Test Auto-Healing
+Command used:
+kubectl delete pod <pod-name>
+
+Result: Kubernetes instantly noticed the Pod was missing and spawned a brand new one to replace it in just 16 seconds. This is how K8s prevents downtime!
+
+## Step 4: Deleting vs Scaling
+- kubectl scale deployment my-nginx-deployment --replicas=0: This stops the Pods but keeps the Deployment instructions in Kubernetes memory.
+- kubectl delete -f k8s/nginx.yaml: This completely erases the Deployment and Service from Kubernetes memory (cleaning up the cluster), but your local .yaml code file remains 100% safe on your hard drive!
+
+## Note on Auto-Scaling
+If traffic increases and CPU usage spikes, a tool called Horizontal Pod Autoscaler (HPA) can automatically increase the number of replicas (e.g., from 2 up to 10). The LoadBalancer instantly detects the new Pods and divides the incoming web traffic among them.
+
+---
+
+# Advanced Architecture & Enterprise Concepts
+
+## 1. Clusters, Nodes, and VMs
+- **Node**: A single physical machine or Virtual Machine (VM).
+- **Cluster**: A group of Nodes connected together to act as one giant supercomputer.
+- Example: If you have 3 VMs, you create **1 Cluster with 3 Nodes**.
+
+## 2. Masters vs Workers (The Enterprise Way)
+In production, a cluster is split into two types of machines:
+- **Worker VMs**: These ONLY run your application Pods (React, Node, Mongo). They handle the heavy traffic.
+- **Master VMs**: These DO NOT run application Pods. They only run the Kubernetes "Control Plane" (The Brain). They monitor the Workers and make decisions. This ensures that if the Workers are overwhelmed with 10 million users, the Master stays calm and online.
+
+## 3. The Four Pillars of K8s Architecture
+1. **Load Balancing**: Traffic comes in, and the Load Balancer divides it fairly across all running Pods.
+2. **Auto-Scaling (HPA)**: If traffic increases, CPU usage spikes. K8s automatically creates more Pods to handle the load.
+3. **Auto-Healing**: If a Pod crashes or is deleted, K8s instantly recreates it.
+4. **High Availability (HA)**: 
+   - *Worker HA*: If a Worker VM dies, all its Pods are instantly recreated on the surviving Worker VMs.
+   - *Master HA*: Enterprise clusters use 3 Master VMs. They use a consensus algorithm to vote and elect one "Leader." If the Leader Master dies, the other two Masters instantly vote to elect a new Leader, preventing any loss of control.
+
+## 4. Leader Election Details
+- You can send kubectl commands to **any** of the 3 Master VMs.
+- However, behind the scenes, only the elected **Leader** makes the scheduling decisions. The other Masters act as active backups, constantly syncing data so they are ready to take over if the Leader fails.

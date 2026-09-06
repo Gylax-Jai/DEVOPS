@@ -1,0 +1,94 @@
+================================================================================
+                         AWS CLOUD BEGINNER'S HANDBOOK
+================================================================================
+
+AWS (Amazon Web Services) has over 200 different services. It can look very 
+scary, but the truth is: 95% of companies only use the same 5 to 10 core services.
+
+Think of AWS as just renting someone else's computer and infrastructure by the minute.
+
+--------------------------------------------------------------------------------
+1. THE "BIG 5" SERVICES TO LEARN FIRST
+--------------------------------------------------------------------------------
+Do not try to learn all of AWS. Focus ONLY on these 5 services first. They form 
+the foundation of every cloud architecture.
+
+1. IAM (Identity and Access Management) - SECURITY
+   - What it is: The bouncer at the door. It manages users, passwords, and permissions.
+   - First Rule of AWS: NEVER use your root email/password to do daily work. 
+     Use IAM to create a "Developer" user for yourself.
+
+2. EC2 (Elastic Compute Cloud) - COMPUTE
+   - What it is: A Virtual Machine (VM). 
+   - How you use it: You rent a Linux or Windows VM, SSH into it, install Docker, 
+     and run your code.
+
+3. S3 (Simple Storage Service) - STORAGE
+   - What it is: A massive, infinite hard drive in the cloud.
+   - How you use it: You store user profile pictures, videos, and backups here. 
+     It is incredibly cheap and never runs out of space.
+
+4. RDS (Relational Database Service) - DATABASE
+   - What it is: A managed SQL database (Postgres, MySQL).
+   - How you use it: Instead of you installing SQL on a VM, Amazon installs it, 
+     backs it up daily, and keeps it updated. You just connect to it.
+
+5. VPC (Virtual Private Cloud) - NETWORKING
+   - What it is: Your private network in the cloud.
+   - How you use it: Since you have CCNA knowledge, this will be easy! It is 
+     how you create Subnets, IP addresses, and routing tables to keep your 
+     database hidden from the public internet.
+
+--------------------------------------------------------------------------------
+2. HOW AWS MAPS TO WHAT YOU ALREADY KNOW
+--------------------------------------------------------------------------------
+You already know these concepts! You just need to learn the AWS name for them:
+
+| What you know locally         | What it is called in AWS                       |
+|-------------------------------|------------------------------------------------|
+| VirtualBox / VMware VM        | EC2 (Elastic Compute Cloud)                    |
+| Docker Desktop                | ECS (Elastic Container Service)                |
+| Kubernetes Cluster            | EKS (Elastic Kubernetes Service)               |
+| Nginx Load Balancer           | ALB (Application Load Balancer)                |
+| Running MongoDB locally       | Amazon DocumentDB (or MongoDB Atlas)           |
+| Saving images to a folder     | S3 (Simple Storage Service)                    |
+
+--------------------------------------------------------------------------------
+3. THE LEARNING ROADMAP (Step-by-Step)
+--------------------------------------------------------------------------------
+
+STEP 1: The Setup
+- Create an AWS Free Tier Account.
+- Go to IAM, create an admin user for yourself, and log in as that user.
+- Set up a Billing Alarm (e.g., alert me if the bill goes over $5).
+
+STEP 2: The VM Challenge
+- Go to EC2.
+- Launch a free Linux Ubuntu VM.
+- SSH into it from your Windows terminal.
+- Install Docker on it.
+
+STEP 3: The Storage Challenge
+- Go to S3.
+- Create a "Bucket" (a folder).
+- Upload an image to it and make it publicly viewable via a URL.
+
+STEP 4: The Database Challenge
+- Go to RDS.
+- Spin up a free MySQL or Postgres database.
+- Connect to it from your laptop using a database tool.
+
+STEP 5: The Full Stack Deployment (Your Final Boss)
+- Put your React/Node app on the EC2 instance using Docker.
+- Connect the Node backend to the RDS database.
+- Put a Load Balancer in front of your EC2 instance so the world can access it!
+
+--------------------------------------------------------------------------------
+4. HOW TO AVOID GETTING CHARGED MONEY
+--------------------------------------------------------------------------------
+AWS is pay-as-you-go. If you leave a big server running, you will get billed.
+- Always use resources labeled "Free Tier Eligible".
+- When you are done learning for the day, STOP your EC2 instances.
+- If you create an RDS Database or a Kubernetes (EKS) cluster, DELETE THEM when 
+  you are done. (EKS is not free!).
+================================================================================

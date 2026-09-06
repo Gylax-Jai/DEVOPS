@@ -1,0 +1,34 @@
+# 1. THE DEPLOYMENT (The Manager)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx-deployment
+spec:
+  replicas: 2 # We want 2 identical copies running!
+  selector:
+    matchLabels:
+      app: nginx-web
+  template:
+    metadata:
+      labels:
+        app: nginx-web
+    spec:
+      containers:
+      - name: nginx-container
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+
+---
+# 2. THE SERVICE (The Doorway)
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-nginx-service
+spec:
+  type: LoadBalancer # This exposes it to your localhost
+  selector:
+    app: nginx-web
+  ports:
+    - port: 8080
+      targetPort: 80
