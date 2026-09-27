@@ -98,8 +98,8 @@ docker-compose.yml
 
 Kubernetes uses files like:
 
-deployment.yaml
-service.yaml
+deployment.yaml(it manage the pods so tell how many pods we want how to runn and all)
+service.yaml   (it help by giving one ip and dns so outside request can access pods, also it do load balancing by distributing traffic qually )
 configmap.yaml
 secret.yaml
 ingress.yaml
@@ -593,3 +593,44 @@ In production, a cluster is split into two types of machines:
 ## 4. Leader Election Details
 - You can send kubectl commands to **any** of the 3 Master VMs.
 - However, behind the scenes, only the elected **Leader** makes the scheduling decisions. The other Masters act as active backups, constantly syncing data so they are ready to take over if the Leader fails.
+
+===================
+
+
+# Kubernetes & Container Runtime Study Notes
+
+## 1. Do We Need Docker Desktop for Kubernetes?
+No. Modern Kubernetes (v1.24+) does not require Docker.
+Kubernetes deprecated dockershim and now talks directly to lightweight container runtimes through the CRI (Container Runtime Interface).
+In production and Linux servers, Kubernetes runs natively on top of **containerd**.
+
+## 2. The Core Setup Components (From Scratch)
+When building a raw Kubernetes node/cluster on Linux, you need 4 primary pillars:
+
+| Component | What it is | Role / Responsibility |
+|-----------|------------|-----------------------|
+| **containerd** | Container Runtime | The low-level engine that pulls container images from registries and executes Linux containers. |
+| **kubelet** | Node Worker Agent | Runs as a system service on every node. It receives instructions from the control plane and ensures the Pods/containers are running and healthy. |
+| **kubeadm** | Cluster Bootstrapper | The CLI admin tool to initialize the cluster (kubeadm init on master node) and connect worker nodes (kubeadm join). |
+| **CNI** | Container Network Interface | Third-party network overlay (e.g., Flannel, Calico, Cilium) that assigns unique IP addresses to every Pod so they can communicate across different physical servers. |
+
+## 3. What is "Vanilla Kubernetes" (Vanilla K8s)?
+- **Meaning**: It is NOT a downloadable app or specific software installer.
+- **Definition**: It is an industry term / slang (like "Vanilla JavaScript").
+- **What it refers to**: Running the pure, raw, unmodified open-source Kubernetes directly from the CNCF/upstream project using kubeadm on clean Linux servers without proprietary commercial layers or cloud wrappers.
+
+## 4. Kubernetes Flavors Comparison
+
+                     +-- Vanilla K8s (Raw open-source via kubeadm)
+                      
+Kubernetes Universe -+-- Managed Cloud (AWS EKS, Google GKE, Azure AKS)
+                      
+                     +-- Lightweight/Local (k3s, Minikube, Kind)
+                      
+                     +-- Enterprise Platforms (Red Hat OpenShift, Rancher)
+
+- **Vanilla K8s**: 100% free, complete control, manual maintenance/upgrades.
+- **Managed Cloud (EKS/GKE/AKS)**: Cloud provider manages master nodes and control plane automatically.
+- **Lightweight (k3s/Minikube)**: Packaged single-binary distributions for local dev or edge computing.
+- **Enterprise (OpenShift/Rancher)**: Vanilla K8s bundled with custom UI dashboards, enterprise security, and commercial support.
+
