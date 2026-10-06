@@ -594,9 +594,56 @@ In production, a cluster is split into two types of machines:
 - You can send kubectl commands to **any** of the 3 Master VMs.
 - However, behind the scenes, only the elected **Leader** makes the scheduling decisions. The other Masters act as active backups, constantly syncing data so they are ready to take over if the Leader fails.
 
-===================
+=======================================================================================
+
+KUBERNETES CLUSTER
+
+CONTROL PLANE / MASTER VM
+
+kubectl
+- Command-line tool used to send Kubernetes commands to the API Server.
+- It can be installed on the master/control-plane VM or any machine that has cluster access.
+
+API Server
+- The entry point/gateway for all Kubernetes requests.
+- Receives requests from kubectl, UI, CI/CD tools, and other clients.
+
+etcd
+- Persistent key-value database for Kubernetes.
+- Stores cluster configuration, desired state, Pods, nodes, Secrets, and other cluster information.
+
+Scheduler
+- Selects the appropriate worker node/VM for a newly created Pod.
+- Considers available CPU, memory, node labels, taints, affinity rules, and more.
+
+Controller Manager
+- Continuously checks whether the actual cluster state matches the desired state.
+- Example: if the desired state is 3 Pods but only 2 are running, it creates another Pod.
 
 
+WORKER VM / WORKER NODE
+
+Kubelet
+- Agent running on every worker node.
+- Receives Pod instructions from the API Server and ensures the required containers are running on that node.
+
+Kube-proxy
+- Manages network rules on the worker node.
+- Helps Services route traffic to the correct Pods and supports load balancing.
+
+containerd
+- Container runtime.
+- Pulls container images and starts/stops the actual containers.
+- Kubelet uses containerd to run containers for Pods.
+
+=====================================================
+#vanilla k8
+kubectl(mastercontrol cluster using this)
+kubeadm(form cluster)
+kubelet(manage pods on each)
+containered(runtimre of container)
+
+====================================================
 # Kubernetes & Container Runtime Study Notes
 
 ## 1. Do We Need Docker Desktop for Kubernetes?
