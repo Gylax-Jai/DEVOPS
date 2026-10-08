@@ -303,6 +303,24 @@ User
 -> Container
 -> App
 
+
+The 3 Service Types
+ClusterIP (Internal Only):
+What it is: A fake, permanent IP address for Pod-to-Pod communication inside the cluster.
+Analogy: The internal office intercom. External users cannot use it.
+
+NodePort (The Backdoor):
+What it is: Opens a specific port (like 30005) on the actual IP address of all your Worker VMs.
+Analogy: A backdoor directly into the side of the building. (Mostly used for testing or Bare-Metal servers).
+
+LoadBalancer (The Front Door):
+What it is: Tells AWS/Google Cloud to create a massive, public-facing Load Balancer URL that routes internet traffic safely to your NodePorts.
+Analogy: The main hotel entrance for the public internet.
+
+ClusterIP vs Flannel IP
+Flannel IP (The Raw IP): The actual, physical IP address assigned to a Pod (e.g., 10.244.1.5). If the Pod dies, this IP vanishes forever. Flannel builds the "roads" that allow these IPs to talk across different VMs.
+
+ClusterIP (The Fake IP): A permanent, virtual IP address (e.g., 10.96.0.50). Because Flannel IPs change constantly, you use the ClusterIP as a stable address. It catches the traffic and routes it to the living Flannel IPs.
 ---
 
 ## Label
