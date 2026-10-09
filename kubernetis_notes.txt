@@ -660,6 +660,178 @@ kubectl(mastercontrol cluster using this)
 kubeadm(form cluster)
 kubelet(manage pods on each)
 containered(runtimre of container)
+==============================================================
+
+TO UPDATE THE APP USE ROLLING UPDATE PARAMETER
+
+ROLLING UPDATE
+
+Rolling updates replace old Pods with new Pods gradually.
+
+maxUnavailable:
+- Maximum number of Pods allowed to be unavailable during the update.
+- maxUnavailable: 2 means up to 2 Pods can be unavailable.
+- It does not control how many new Pods are created.
+
+maxSurge:
+- Maximum number of extra new Pods allowed during the update.
+- maxSurge: 2 allows 2 additional new Pods temporarily.
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 2
+    maxSurge: 2
+=============================================
+
+HPA(horizontal scaling) and Metrics
+
+HPA — Horizontal Pod Autoscaler
+
+HPA automatically increases or decreases the number of Pod replicas based on metrics such as:
+
+- CPU utilization
+- Memory utilization
+- Custom application metrics
+
+Example:
+
+kubectl autoscale deployment web-app \
+  --min=2 \
+  --max=10 \
+  --cpu-percent=70
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cisco-prod-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cisco-prod-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+===================================================
+kubectl get hpa
+kubectl describe hpa cisco-prod-app-hpa
+
+kubectl top pods displays current resource usage:
+----------------------------------------------------------------
+
+Proper deployment-->
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cisco-prod-app
+  labels:
+    app: cisco
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app: cisco
+
+  template:
+    metadata:
+      labels:
+        app: cisco
+
+    spec:
+      terminationGracePeriodSeconds: 30
+
+      containers:
+        - name: cisco-container
+          image: httpd:2.4
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 80
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cisco-prod-service
+  labels:
+    app: cisco
+spec:
+  type: NodePort
+  selector:
+    app: cisco
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 32300
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cisco-prod-app-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cisco-prod-app
+  minReplicas: 3
+  maxReplicas: 10
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0
+    scaleDown:
+      stabilizationWindowSeconds: 300
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+===================================
 
 ====================================================
 # Kubernetes & Container Runtime Study Notes
